@@ -1,0 +1,89 @@
+<project name="firstAnt" basedir="." default="run">
+	
+	<!-- PROPERTIES werden mit ${} referenziert -->
+	
+	<echo message="Setting PROPERTIES:"/>
+	<echo message="Setting Source-Directory (in Eclipse project)..."/>
+		<property name="srcDirectory" value="src\cards\\"/>
+	
+	<echo message="Setting package name ..."/>
+	<property name="pkgName" value="cards"/>
+	
+	<echo message="Setting TEMP-Directory (in Eclipse project)..."/>
+		<property name="tmpDirectory" value="C:\TMP\\"/>
+	<echo message="Creating TEMP-Directory (tmp)..."/>
+		<mkdir dir="${tmpDirectory}"/>
+	
+	<echo message="Setting Production-Directory (existing folder under C:\)..."/>
+		<property name="productionDirectory" value="C:\PROD\\"/>
+	
+	<echo message="Setting Archive-Directory (existing folder under C:\)..."/>
+		<property name="archiveDirectory" value="C:\ANT_ARCHIVE\\"/>
+	
+	<echo message="*********** All properties set!"/>
+	
+	<echo message="Setting date ..."/>
+		<tstamp/>
+	<echo message="*********** Date set!"/>
+	
+	<!-- CLEAN -->
+	<target name="clean" depends="test">
+			<echo message="Obsolete files are deleted..."/>
+			<delete dir="${tmpDirectory}"/>
+			<echo message="*********** Delete finished!"/>
+		</target>
+	
+	<!-- GET (source to fresh working directory) -->
+	<target name="get" depends="compile">
+		<echo message="Copy new source data directory (TMP) to tmp directory..."/>
+		<copy file="${tmpDirectory}${pkgName}/Card.class" todir="${productionDirectory}"/>
+		<copy file="${tmpDirectory}${pkgName}/NumberCard.class" todir="${productionDirectory}"/>
+		<copy file="${tmpDirectory}${pkgName}/Color.class" todir="${productionDirectory}"/>
+	</target>
+		
+	<!-- COMPILE -->
+		<!-- kompiliert alle Sources vom TMP-Directory und schreibt die *.class-Dateien in das Production-Dir -->
+	<target name="compile">
+		<echo message="Begin compiling..."/>
+		<javac srcdir="${srcDirectory}"
+		destdir="${tmpDirectory}"
+		classpath="*.jar"
+		debug="on"
+		source="1.8"/>
+		<echo message="*********** Compiling finished!"/>
+	</target>
+	
+	<!-- JAR -->
+		<!-- Jar all files in the src directory into a file called classes.jar in the archive. -->
+	<target name="jar" depends="doc">
+		<echo message="Start JAR target ..."/>
+		<jar destfile="${archiveDirectory}/${DSTAMP}/jar files/classes.jar" basedir="${srcDirectory}"/>
+	</target>
+	
+	<!-- TEST -->
+	<target name="test" depends="jar">
+	
+		 <junit printsummary="yes">
+		 	
+		 	<classpath location="C:\Users\Lenapopena\.p2\pool\plugins\org.junit_4.12.0.v201504281640\junit.jar" />
+		 	
+		 	<test name="NumberCardTest.java"/>  
+		 	
+		  </junit>
+	</target>
+	
+	<!-- RUN -->
+	<target name="run" depends="test">
+		<echo message="*********** Our RUN is finished ... Thank you!"/>
+	</target>
+	
+	<!-- DOC -->
+	<target name="doc" depends="get">
+		<echo message="Start creation of documentation ..."/>
+	    <javadoc destdir="${archiveDirectory}/${DSTAMP}/documentation">
+	    	<fileset dir="${srcDirectory}"/>
+	    </javadoc>
+		<echo message="*********** Documentation created!"/>
+	  </target>
+	
+</project>
